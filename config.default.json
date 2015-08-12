@@ -5,6 +5,8 @@
     "urls": [
       "url1",
       "url2"
-    ]
+    ],
+    "chunkSize": 3,
+    "incrCol": "id"
   }
 ]

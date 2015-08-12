@@ -1,5 +1,7 @@
+'use strict';
+
 var superagent = require('superagent');
-var config = require('../config.json');
+var config = require('./config.js');
 var Pusher = require('./pusher');
 
 for(var i = 0; i<config.length; i++) {
