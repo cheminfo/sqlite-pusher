@@ -31,7 +31,7 @@ Pusher.prototype.start = function () {
         if (that.queueLength === 0) {
             that._push();
         }
-    }, 2000);
+    }, that.options.interval);
     this._started = true;
 };
 
