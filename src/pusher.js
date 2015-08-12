@@ -27,7 +27,9 @@ Pusher.prototype.start = function () {
         return that.database.run('PRAGMA synchronous = OFF; PRAGMA journal_mode = MEMORY;');
     });
 
-    setInterval(function () {
+    this._queue(this._getLast.bind(this));
+
+    this._interval = setInterval(function () {
         if (that.queueLength === 0) {
             that._push();
         }
@@ -66,13 +68,12 @@ Pusher.prototype._push = function () {
                 delete el[that.options.incrCol];
             });
 
-            return new Promise(function(resolve, reject) {
-                console.log(r);
+            return new Promise(function (resolve, reject) {
                 superagent.put(that.options.url)
                     .send(r)
-                    .end(function(err, res) {
-                        if(err) return reject(err);
-                        if(res.status === 200) {
+                    .end(function (err, res) {
+                        if (err) return reject(err);
+                        if (res.status === 200) {
                             that.incr = incr;
                             that._push();
                             return resolve();
@@ -82,7 +83,42 @@ Pusher.prototype._push = function () {
             });
         });
     });
+};
 
+Pusher.prototype._getLast = function () {
+    var that = this;
+    debug('get ' + that.options.lastUrl);
+    return new Promise(function (resolve, reject) {
+        superagent.get(that.options.lastUrl)
+            .end(function(err, res) {
+                if(err && res.status !== 404) {
+                    debug('Error with last entry url, check your configuration');
+                    that.stop();
+                    return reject(err);
+                }
+                if(res.status === 200) {
+                    var incr = res.body[that.options.incrCol];
+                    if(incr === undefined) {
+                        debug('Could not get increment');
+                        that.stop();
+                        return reject(new Error('Could not get last increment'));
+                    }
+                    that.incr = incr;
+                    return resolve();
+                } else if(res.status === 404) {
+                    debug('remote table does not exist');
+                    that.incr = 0;
+                    return resolve();
+                } else {
+                    return reject(new Error('Unknown error'));
+                }
+            });
+    });
+};
+
+Pusher.prototype.stop = function() {
+    clearInterval(this._interval);
+    this._started = false;
 };
 
 exports = module.exports = Pusher;

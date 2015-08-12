@@ -3,8 +3,10 @@
     "database": "path/to/database/file",
     "table": "table-name",
     "urls": [
-      "url1",
-      "url2"
+      {
+        "pushUrl": "",
+        "lastUrl": ""
+      }
     ],
     "chunkSize": 3,
     "incrCol": "id",
