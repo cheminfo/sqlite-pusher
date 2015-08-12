@@ -1,0 +1,10 @@
+[
+  {
+    "database": "path/to/database/file",
+    "table": "table-name",
+    "urls": [
+      "url1",
+      "url2"
+    ]
+  }
+]
