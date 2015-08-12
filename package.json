@@ -1,0 +1,23 @@
+{
+  "name": "sqlite-pusher",
+  "version": "0.0.1",
+  "description": "Push sqlite entries for sync",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/cheminfo/sqlite-pusher.git"
+  },
+  "keywords": [
+    "sqlite",
+    "push"
+  ],
+  "author": "Daniel Kostro",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/cheminfo/sqlite-pusher/issues"
+  },
+  "homepage": "https://github.com/cheminfo/sqlite-pusher#readme"
+}
