@@ -91,7 +91,7 @@ Pusher.prototype._getLast = function () {
     return new Promise(function (resolve, reject) {
         superagent.get(that.options.lastUrl)
             .end(function(err, res) {
-                if(err && res.status !== 404) {
+                if(err || res.status !== 404) {
                     debug('Error with last entry url, check your configuration');
                     that.stop();
                     return reject(err);
