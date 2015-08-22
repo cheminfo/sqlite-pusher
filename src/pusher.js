@@ -73,9 +73,6 @@ Pusher.prototype._push = function () {
             } else {
                 return;
             }
-            r.forEach(function (el) {
-                delete el[that.options.incrCol];
-            });
 
             return new Promise(function (resolve, reject) {
                 superagent.put(that.options.pushUrl)
