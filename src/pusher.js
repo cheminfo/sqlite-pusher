@@ -7,7 +7,6 @@ var superagent = require('superagent');
 
 function Pusher(options) {
     this.options = options;
-    this.current = Promise.resolve();
     this.last = Promise.resolve();
     this.queueLength = 0;
     this.incr = 0;
@@ -69,7 +68,7 @@ Pusher.prototype._push = function () {
             });
 
             return new Promise(function (resolve, reject) {
-                superagent.put(that.options.url)
+                superagent.put(that.options.pushUrl)
                     .send(r)
                     .end(function (err, res) {
                         if (err) return reject(err);
