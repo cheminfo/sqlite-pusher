@@ -11,7 +11,6 @@ function Pusher(options) {
     this.last = Promise.resolve();
     this.queueLength = 0;
     this.incr = 0;
-    this.isReset = false;
 }
 
 Pusher.prototype.start = function () {
@@ -30,14 +29,9 @@ Pusher.prototype.start = function () {
 
     this._reset();
 
-    this._interval = setInterval(function () {
-        if (that.queueLength === 0 && !that.isReset) {
-            that._log('interval: push');
-            that._push();
-        } else {
+    setInterval(function () {
             that._log('interval: reset');
             that._reset();
-        }
     }, that.options.interval);
     this._started = true;
 };
@@ -89,11 +83,8 @@ Pusher.prototype._push = function () {
                             that.incr = incr;
                             that._log('incr ' + incr);
                             that._push();
-                            that.isReset = false;
                             return resolve();
                         }
-                        that.isReset = true;
-                        console.log(res);
                         return reject(res);
                     });
             });
@@ -129,18 +120,7 @@ Pusher.prototype._getLast = function () {
                     return reject(new Error('Unknown error'));
                 }
             });
-    }).then(function () {
-            that.isReset = false;
-            return Promise.resolve();
-        }, function (err) {
-            that.isReset = true;
-            return Promise.reject(err);
-        });
-};
-
-Pusher.prototype.stop = function () {
-    clearInterval(this._interval);
-    this._started = false;
+    });
 };
 
 exports = module.exports = Pusher;
