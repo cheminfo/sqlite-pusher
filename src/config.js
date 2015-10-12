@@ -1,6 +1,10 @@
 'use strict';
 
-var config = require('../config.json');
+var args = require('minimist')(process.argv.slice(2));
+var path = require('path');
+
+var configDir = args.configDir || path.join(__dirname, '../config.json');
+var config = require(configDir);
 var _ = require('lodash');
 var modConfig = [];
 var mandatory = ['interval', 'chunkSize', 'incrCol', 'database', 'table', 'pushUrl', 'lastUrl'];
