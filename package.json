@@ -1,6 +1,6 @@
 {
   "name": "sqlite-pusher",
-  "version": "0.0.2",
+  "version": "0.1.0",
   "description": "Push sqlite entries for sync",
   "bin": "src/index.js",
   "scripts": {
