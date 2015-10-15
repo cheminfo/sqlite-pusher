@@ -21,19 +21,28 @@ Pusher.prototype.start = function () {
     }
     // open database
     that._log('opening database');
-    var db = new sqlite.cached.Database(this.options.database);
-    this.database = new PromiseWrapper(db, ['all', 'run', 'get']);
-    this._queue(function () {
-        return that.database.run('PRAGMA synchronous = OFF; PRAGMA journal_mode = MEMORY;');
-    });
+    var db = new sqlite.Database(this.options.database, sqlite.OPEN_READONLY, function(err) {
+        if(err) {
+            that._log('Error opening database. Retrying in 30 seconds');
+            setTimeout(function() {
+                that.start();
+            }, 30000);
+            return;
+        }
+        that.database = new PromiseWrapper(db, ['all', 'run', 'get']);
+        that._queue(function () {
+            return that.database.run('PRAGMA synchronous = OFF; PRAGMA journal_mode = MEMORY;');
+        });
 
-    this._reset();
+        that._reset();
 
-    setInterval(function () {
+        setInterval(function () {
             that._log('interval: reset');
             that._reset();
-    }, that.options.interval);
-    this._started = true;
+        }, that.options.interval);
+        that._started = true;
+    });
+
 };
 
 Pusher.prototype._reset = function () {
