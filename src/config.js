@@ -2,6 +2,7 @@
 
 var args = require('minimist')(process.argv.slice(2));
 var path = require('path');
+var urlLib = require('url');
 
 var configPath = path.resolve(args.config) || path.join(__dirname, '../config.json');
 var config = require(configPath);
@@ -15,6 +16,11 @@ for (var i = 0; i < config.length; i++) {
         var last = modConfig[modConfig.length-1];
         last.pushUrl = url.pushUrl;
         last.lastUrl = url.lastUrl;
+        var auth = last.auth || args.auth;
+        if (auth) {
+            var parsedUrl = urlLib.parse(last.pushUrl);
+            last.pushUrl = parsedUrl.search ? last.pushUrl + '&auth=' + auth : last.pushUrl + '?auth=' + auth;
+        }
         delete  last.urls;
     }
 }
