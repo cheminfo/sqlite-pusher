@@ -8,6 +8,9 @@
         "lastUrl": ""
       }
     ],
+    "fields": {
+        "A": "Z"
+    },
     "chunkSize": 3,
     "incrCol": "id",
     "interval": 2000

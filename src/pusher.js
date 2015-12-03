@@ -11,6 +11,8 @@ function Pusher(options) {
     this.last = Promise.resolve();
     this.queueLength = 0;
     this.incr = 0;
+    this.altIncrCol = this.options.incrColRemote;
+    if(!this.altIncrCol) this.altIncrCol  = this.options.incrCol;
 }
 
 Pusher.prototype.start = function () {
@@ -70,20 +72,26 @@ Pusher.prototype._queue = function (fn) {
 Pusher.prototype._push = function () {
     var that = this;
     this._queue(function () {
-        var query = 'select * from ' + that.options.table + ' where ' + that.options.incrCol + '>' + that.incr + ' order by ' + that.options.incrCol + ' ASC limit ' + that.options.chunkSize;
+        var fields = '* ';
+        if(that.options.fields) {
+            fields = [];
+            for(let key in that.options.fields) {
+                fields.push(that.options.fields[key] + ' as ' + key + ' ');
+            }
+        }
+        var query = 'select ' + fields.join(',') + ' from ' + that.options.table + ' where ' + that.options.incrCol + '>' + that.incr + ' order by ' + that.options.incrCol + ' ASC limit ' + that.options.chunkSize;
         that._log(query);
         return that.database.all(query).then(function (r) {
             var incr;
             if (r.length) {
                 that._log('send ' + r.length + ' elements');
-                incr = r[r.length - 1][that.options.incrCol];
+                incr = r[r.length - 1][that.altIncrCol];
             } else {
                 that._log('no element to send');
                 return;
             }
 
             return new Promise(function (resolve, reject) {
-
                 superagent.put(that.options.pushUrl)
                     .send(r)
                     .end(function (err, res) {
@@ -112,7 +120,8 @@ Pusher.prototype._getLast = function () {
                     return reject(err);
                 }
                 if (res.status === 200) {
-                    var incr = res.body[that.options.incrCol];
+
+                    var incr = res.body[that.altIncrCol];
                     if (incr === undefined) {
                         that._log('Could not get increment');
                         return reject(new Error('Could not get last increment'));
